@@ -1,0 +1,3 @@
+class DevelopmentConfig():
+    Debug = True
+    
