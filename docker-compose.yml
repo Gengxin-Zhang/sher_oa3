@@ -1,0 +1,26 @@
+version: '3'
+services:
+  database:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile_database
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./db/db_backup:/data/db
+    restart: "no"
+  api:
+    build:
+      context: ./
+      dockerfile: ./backend/Dockerfile_api
+    ports:
+      - "9098:9098"
+    volumes:
+      - ./backend:/api
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1g"
+    links:
+      - database
+        
