@@ -1,0 +1,15 @@
+FROM node:10.15.3
+
+ADD ./oa3-frontend /app
+
+WORKDIR /app
+
+RUN npm install
+
+RUN npm run build
+
+ENV NODE_ENV=production
+ENV HOST 0.0.0.0
+ENV PORT 8000
+
+CMD ["npm", "start"]
