@@ -26,11 +26,10 @@ services:
   frontend:
     build:
       context: ./
-      dockerfile: ./oa3-frontend/Dockerfile_frontend
+      dockerfile: ./frontend/Dockerfile_frontend
     ports:
       - "9099:8000"
     volumes:
-      - ./oa3-frontend:/app
+      - ./frontend:/app
     links:
       - api
-        

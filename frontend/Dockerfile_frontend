@@ -1,6 +1,6 @@
 FROM node:10.15.3
 
-ADD ./oa3-frontend /app
+ADD ./frontend /app
 
 WORKDIR /app
 
