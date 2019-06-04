@@ -22,15 +22,15 @@
 - **程序部**  
 
 ## 技术方案
-- Vue
-- flask
-- mongodb
-- redis
-- docker
+- Nuxt.js
+- Flask
+- MongoDB
+- Redis
+- Docker
 
 ## 部署方法  
 #### Ubuntu  
-```
+``` bash
 #安装Nginx
 sudo apt update
 sudo apt install nginx

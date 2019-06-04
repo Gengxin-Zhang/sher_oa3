@@ -3,7 +3,7 @@ services:
   database:
     build:
       context: ./
-      dockerfile: ./backend/Dockerfile_database
+      dockerfile: ./db/Dockerfile_database
     ports:
       - "27017:27017"
     volumes:
@@ -23,4 +23,14 @@ services:
         max-size: "1g"
     links:
       - database
+  frontend:
+    build:
+      context: ./
+      dockerfile: ./oa3-frontend/Dockerfile_frontend
+    ports:
+      - "9099:8000"
+    volumes:
+      - ./oa3-frontend:/app
+    links:
+      - api
         
