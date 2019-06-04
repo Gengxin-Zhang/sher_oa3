@@ -22,11 +22,11 @@
 - **程序部**  
 
 ## 技术方案
-- Vue
-- flask
-- mongodb
-- redis
-- docker
+- Nuxt
+- Flask
+- MongoDB
+- Redis
+- Docker
 
 ## 部署方法  
 #### Ubuntu  
