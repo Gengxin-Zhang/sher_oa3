@@ -22,7 +22,11 @@
 - **程序部**  
 
 ## 技术方案
+<<<<<<< HEAD
 - Nuxt.js
+=======
+- Nuxt
+>>>>>>> e7a2313efd6e00b1fcfbe78a6fdf49c676158ca4
 - Flask
 - MongoDB
 - Redis
