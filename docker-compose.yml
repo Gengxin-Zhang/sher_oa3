@@ -12,24 +12,24 @@ services:
   api:
     build:
       context: ./
-      dockerfile: ./backend/Dockerfile_api
+      dockerfile: ./backend/Dockerfile_sheroa3
     ports:
-      - "9098:9098"
+      - "10079:10079"
     volumes:
-      - ./backend:/api
+      - ./backend:/sheroa3
     logging:
       driver: "json-file"
       options:
         max-size: "1g"
     links:
       - database
-  frontend:
-    build:
-      context: ./
-      dockerfile: ./frontend/Dockerfile_frontend
-    ports:
-      - "9099:8000"
-    volumes:
-      - ./frontend:/app
-    links:
-      - api
+  # frontend:
+  #   build:
+  #     context: ./
+  #     dockerfile: ./frontend/Dockerfile_frontend
+  #   ports:
+  #     - "9099:8000"
+  #   volumes:
+  #     - ./frontend:/app
+  #   links:
+  #     - api

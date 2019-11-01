@@ -1,20 +1,21 @@
-# sheroa3_frontend
+# admin
 
-> 升华网OA3 前端
+> OIKii2's Admin
 
 ## Build Setup
 
 ``` bash
 # install dependencies
-$ npm install
+npm install
 
-# serve with hot reload at localhost:3000
-$ npm run dev
+# serve with hot reload at localhost:8080
+npm run dev
 
-# build for production and launch server
-$ npm run build
-$ npm start
+# build for production with minification
+npm run build
 
-# generate static project
-$ npm run generate
+# build for production and view the bundle analyzer report
+npm run build --report
 ```
+
+For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).

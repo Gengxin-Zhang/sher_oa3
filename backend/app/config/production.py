@@ -1,6 +1,6 @@
 class ProductionConfig():
-    Debug = False
+    DEBUG = False
     MONGODB_SETTINGS = {
-        'db': 'sheroa3',
-        'host': 'mongodb://mongodb/sheroa3',
+        'db': 'oikii2',
+        'host': 'mongodb://database/oikii2',
     }
