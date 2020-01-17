@@ -1,15 +1,19 @@
-from flask import g, jsonify, Blueprint, request
-from flask import current_app as flaskapp
-from app.util.common import trueReturn, falseReturn
-from app.util.auth import generate_jwt, verify_jwt
-from app.models.User import User
-from mongoengine.queryset.visitor import Q
-import requests
-import json
-import hashlib
 import datetime
-
+import hashlib
+import json
 import traceback
+
+import requests
+from flask import Blueprint
+from flask import current_app as flaskapp
+from flask import g, jsonify, request
+from mongoengine.queryset.visitor import Q
+
+from app.api import handle_error, validsign
+from app.common.result import falseReturn, trueReturn
+from app.models.User import User
+from app.util.auth import generate_jwt, verify_jwt
+
 auth_blueprint = Blueprint('auth', __name__, url_prefix='/auth')
 
 
@@ -19,9 +23,10 @@ def before_request():
         if request.get_data():
             g.data = request.get_json(silent=True)
         Authorization = request.headers.get('Authorization', None)
+        print(Authorization)
         if Authorization:
             typ, token = Authorization.split()
-            if typ == 'token':
+            if typ == 'Bearer':
                 g.token = token
                 g.user, msg = verify_jwt(token)
         else:
@@ -31,43 +36,25 @@ def before_request():
         return falseReturn(None, '数据错误')
 
 
-def str2md5(str):
-    return hashlib.md5(hashlib.md5(str.encode('utf-8')).hexdigest().encode('utf-8')).hexdigest()
-
-
+@handle_error
 @auth_blueprint.route('/signin', methods=['POST'])
 def signin():
-    try:
-        name = g.data.get("name")
-        password = g.data.get("password")
-        user = User.objects(user_id=name).first()
-        if not user:
-            return falseReturn(None, "用户不存在")
-        if not user.password == str2md5(password):
-            return falseReturn(None, "用户名或密码不存在")
-        return trueReturn({
-            'userData': {
-                'id': str(user.id),
-                'name': user.name,
-                'token': generate_jwt(user),
-                'user_id': user.user_id,
-                'permission': user.permission
-            }
-        })
-    except:
-        return falseReturn(None, "")
+    name = g.data.get("username", "").strip()
+    password = g.data.get("password", "")
+    user = User.objects(user_id=name).first()
+    if not user or not user.valid_password(password):
+        return falseReturn(None, "用户名或密码有误")
+    return trueReturn({
+        'user': user.get_base_info(),
+        'token': generate_jwt(user),
+    })
 
 
-@auth_blueprint.route('/verify', methods=['GET'])
+@handle_error
+@auth_blueprint.route('/valid_token', methods=['POST'])
+@validsign
 def verify():
     try:
-        return trueReturn({'userData': {
-            'id': str(g.user.id),
-            'name': g.user.name,
-            'token': g.token,
-            'user_id': g.user.user_id,
-            'permission': g.user.permission
-        }}, "")
+        return trueReturn({'user': g.user.get_base_info()}, "")
     except:
-        traceback.print_exc()
         return falseReturn()
