@@ -63,7 +63,7 @@ export default {
     } else if (nowHour > 18 && nowHour <= 24) {
       this.welcomeWord = "晚上好";
       this.warmWord = "";
-    } else if (nowHour > 0 && nowHour < 4) {
+    } else if (nowHour >= 0 && nowHour < 4) {
       this.welcomeWord = "夜深了";
       this.warmWord = "工作再忙，身体更重要，记得早点休息";
     }

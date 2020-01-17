@@ -54,7 +54,5 @@ def signin():
 @auth_blueprint.route('/valid_token', methods=['POST'])
 @validsign
 def verify():
-    try:
-        return trueReturn({'user': g.user.get_base_info()}, "")
-    except:
-        return falseReturn()
+    return trueReturn({'user': g.user.get_base_info()}, "")
+
