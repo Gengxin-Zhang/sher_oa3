@@ -1,7 +1,7 @@
 import os
 
 class Config():
-    DEBUG = True
+    Debug = True
     HOST = '0.0.0.0'
     PORT = 8089
     MONGODB_SETTINGS = {
