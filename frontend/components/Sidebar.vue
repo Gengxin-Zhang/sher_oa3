@@ -15,26 +15,26 @@
       </div>
     </div>
     <div class="SidebarList">
-      <nuxt-link to="/">
+      <nuxt-link to="/" class="exact-active">
         <div class="SidebarListItem">
           <a-icon type="compass" />
           <span>个人中心</span>
         </div>
       </nuxt-link>
-      <nuxt-link to="search">
+      <nuxt-link to="search" class="link-active">
         <div class="SidebarListItem">
           <a-icon type="search" style />
           <span>快速查找</span>
         </div>
       </nuxt-link>
-      <nuxt-link to="check">
+      <nuxt-link to="check" class="link-active">
         <div class="SidebarListItem">
           <a-icon type="smile" />
           <span>考勤</span>
         </div>
       </nuxt-link>
 
-      <nuxt-link to="setting">
+      <nuxt-link to="setting" class="link-active">
         <div class="SidebarListItem">
           <a-icon type="setting" />
           <span>设置</span>
@@ -44,7 +44,7 @@
       <div class="SidebarListItem split">
         <span>其他</span>
       </div>
-      <nuxt-link to="/tools">
+      <nuxt-link to="/tools" class="link-active">
         <div class="SidebarListItem">
           <a-icon type="appstore" />
           <span>应用工具</span>
@@ -53,7 +53,7 @@
       <div class="SidebarListItem split" v-if="user.info.permission>=2">
         <span>权限操作</span>
       </div>
-      <nuxt-link to="/globalsetting" v-if="user.info.permission>=2">
+      <nuxt-link to="/globalsetting" class="link-active" v-if="user.info.permission>=2">
         <div class="SidebarListItem">
           <a-icon type="audit" />
           <span>全局设置</span>
@@ -70,9 +70,9 @@ export default {
     status() {
       return this.$store.state.status;
     },
-    user(){
-      return this.$store.state.User
-    },
+    user() {
+      return this.$store.state.User;
+    }
   },
   methods: {
     ...mapActions(["closeSidebar", "openSidebar"])
@@ -138,6 +138,20 @@ $sidebar-width: 15rem;
     width: $sidebar-width;
     a {
       text-decoration: none;
+      &.link-active {
+        &.nuxt-link-active {
+          .SidebarListItem {
+            background-color: rgba(0,0,0,0.1);
+          }
+        }
+      }
+      &.exact-active {
+        &.nuxt-link-exact-active {
+          .SidebarListItem {
+            background-color: rgba(0,0,0,0.1);
+          }
+        }
+      }
     }
     .SidebarListItem {
       height: 2rem;
@@ -180,7 +194,7 @@ $sidebar-width: 15rem;
       }
       &:hover {
         background: rgba(0, 0, 0, 0.1);
-        span{
+        span {
           color: #3b4747;
         }
       }
