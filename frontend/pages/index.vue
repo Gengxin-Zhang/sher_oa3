@@ -4,7 +4,7 @@
       <span class="first text-focus-in">{{welcomeWord}},{{user.info.name}}</span>
       <span class="second text-focus-in">{{warmWord}}</span>
     </div>
-    <div class="signBox" v-if="user.signed">
+    <!-- <div class="signBox" v-if="user.signed">
       <div class="signStatus">
         <span class="alert">当前为非值班时间</span>
         <span class="small">下一次值班时间：周一上午三四节</span>
@@ -24,13 +24,18 @@
           <a-icon type="ellipsis" />
         </a-popover>
       </div>
-    </div>
+    </div> -->
+    <calendar style="margin: 0 -.5rem; width: calc(100% + 1rem)" />
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
+import Calendar from '@/components/Calendar'
 export default {
+  components:{
+    Calendar
+  },
   data() {
     return {
       welcomeWord: "",
@@ -59,10 +64,10 @@ export default {
       this.warmWord = "及时休息，保持一天活力";
     } else if (nowHour >= 14 && nowHour <= 18) {
       this.welcomeWord = "下午好";
-      this.warmWord = "";
+      this.warmWord = "你好";
     } else if (nowHour > 18 && nowHour <= 24) {
       this.welcomeWord = "晚上好";
-      this.warmWord = "";
+      this.warmWord = "这里是一句晚上的问候";
     } else if (nowHour >= 0 && nowHour < 4) {
       this.welcomeWord = "夜深了";
       this.warmWord = "工作再忙，身体更重要，记得早点休息";
@@ -86,7 +91,7 @@ export default {
     }
   }
   .welcome {
-    margin-top: 1rem;
+    margin: 1rem 0;
     .first {
       font-size: 1.5rem;
       font-weight: 500;

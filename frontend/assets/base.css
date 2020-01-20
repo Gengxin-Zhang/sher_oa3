@@ -5,7 +5,8 @@
 .ant-popover-inner-content{
   padding: 0;
   position: relative;
-  min-width: 8rem;
+  min-width: 10rem;
+  max-width: 20vw;
   text-align: center;
 }
 .ant-popover-inner-content>.title{
@@ -58,5 +59,15 @@
     -webkit-filter: blur(0px);
     filter: blur(0px);
     opacity: 1;
+  }
+}
+
+@media screen and (max-width: 500px){
+  .ant-popover-inner-content{
+    padding: 0;
+    position: relative;
+    min-width: 50vw;
+    
+    text-align: center;
   }
 }

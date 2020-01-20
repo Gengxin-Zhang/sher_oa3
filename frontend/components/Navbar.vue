@@ -6,7 +6,7 @@
         v-if="!status.sidebar.open"
         @click="openSidebar"
       >
-        <a-icon type="double-right" />
+        <a-icon type="bars" />
       </div>
       <div class="pageName NavbarList__Item">
         <span>{{pageName}}</span>
@@ -74,7 +74,7 @@ $navbar-height: 3.5rem;
         width: 2rem;
         top: 0.8rem;
         left: 0.5rem;
-        font-size: 0.9rem;
+        font-size: 1.2rem;
         line-height: 2rem;
         text-align: center;
         border-radius: 0.3rem;

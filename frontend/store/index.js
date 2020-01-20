@@ -20,7 +20,6 @@ export const mutations = {
   },
 
   resetStatus(state) {
-    console.log(state)
   },
 
   setStatus(state, status) {
@@ -57,7 +56,6 @@ export const actions = {
         commit("resetStatus")
       }
     } catch(e) {
-      console.log(e)
       commit("resetStatus");
     }
   }

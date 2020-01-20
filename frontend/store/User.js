@@ -60,7 +60,6 @@ export const actions = {
   validToken({
     commit
   }, token) {
-    console.log(token)
     if (token === null || token === undefined || token === "") {
       return Promise.reject("token无效")
     }

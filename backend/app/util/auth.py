@@ -7,7 +7,7 @@ from app.models.User import User
 
 def generate_jwt(user):
     token_dict = {
-        'iat': time.time() + 60*60*2,
+        'iat': time.time() + 60*60*24*30,
         'id': str(user.id)
     }
     return jwt.encode(token_dict,  # payload, 有效载体
