@@ -101,7 +101,7 @@ export default {
         padding: 0.5rem 0.5rem;
         margin: 0;
         .tool {
-          height: 10rem;
+          height: 9rem;
           .logo {
             width: 100%;
             height: 5rem;
@@ -109,14 +109,14 @@ export default {
             font-size: 3rem;
           }
           .info {
-            height: 5rem;
+            height: 4rem;
             width: 100%;
             text-align: center;
             letter-spacing: 3px;
-
             padding: 0.7rem 13%;
             .name {
               font-size: 1.1rem;
+              line-height: 2.6rem;
             }
           }
         }
