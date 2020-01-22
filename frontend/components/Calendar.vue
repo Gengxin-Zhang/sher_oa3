@@ -1,5 +1,5 @@
 <template>
-  <div class="Calendar">
+  <div :class="['Calendar', theme]">
     <div class="head">
       <div class="date">
         <div class>
@@ -30,6 +30,7 @@
                       class="theme"
                       :style="`background-color:${theme.background}`"
                       v-for="theme in calendarThemes"
+                      @click="handleCalendarThemeSelect(theme)"
                     ></div>
                   </div>
                   <div class="popoverList calendar__popoverList" style="text-align:left">
@@ -65,7 +66,7 @@
           :class="['day', day.month === currentDate.getMonth() && day.year === currentDate.getFullYear() ? '':'mask']"
           v-for="day,index in week.days"
         >
-          <div class="title">
+          <div class="title" @click="handleDayClick(day)">
             <span
               :class="['dayNumber', day.year === nowDate.getFullYear() && day.month === nowDate.getMonth() && day.day === nowDate.getDate()?'thisDay':'']"
             >{{day.day}}</span>
@@ -77,11 +78,42 @@
               style="background-color: #D08770;"
               v-for="todo,index in day.todo"
               :key="index"
-            >加班</div>
+            >{{todo.name}}</div>
           </div>
         </div>
       </div>
     </div>
+    <transition name="modelAnimation">
+      <div class="model" v-if="showDayModel">
+        <div class="left">
+          <div class="title">
+            <span>{{currentDay.day.year}}</span>,
+            <span>{{currentDay.day.month+1}}</span>,
+            <span>{{currentDay.day.day}}</span>
+          </div>
+          <div class="title__sub">星期{{dayNameList[0][currentDay.date.getDay()]}}</div>
+        </div>
+        <transition name="modelPartAnimation">
+          <div class="right">
+            <div class="title">本日任务</div>
+            <div class="title__sub">共有{{currentDay.day.todo.length}}项任务等待完成</div>
+            <div class="newTask" @click="handleNewTodo">
+              <a-icon type="plus" />
+            </div>
+            <div class="taskList">
+              <div class="task">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+            </div>
+          </div>
+        </transition>
+        <div class="closeButton" @click="showDayModel=false">
+          <a-icon type="close-circle" />
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -90,9 +122,14 @@ export default {
   data() {
     return {
       dayNameList: ["日一二三四五六七", "一二三四五六日"],
-      // 当前时间
+      theme: "",
       weekMode: 1,
+      // 选中的日期
+      currentDay: null,
+      // 当前时间
       nowDate: null,
+      // 展示天窗口
+      showDayModel: false,
       // 日历显示时间
       currentDate: null,
       // 日历
@@ -102,22 +139,27 @@ export default {
       // 日历主题
       calendarThemes: [
         {
+          name: "black",
           background: "#3B4252",
           font: "#fff"
         },
         {
+          name: "purple",
           background: "#B48EAD",
           font: "#fff"
         },
         {
+          name: "grey",
           background: "#D8DEE9",
           font: "#2E3440"
         },
         {
+          name: "blue",
           background: "#5E81AC",
           font: "#fff"
         },
         {
+          name: "green",
           background: "#8FBCBB",
           font: "#fff"
         }
@@ -172,6 +214,15 @@ export default {
       );
       this.createCalendar(this.currentDate);
     },
+    handleDayClick(day) {
+      this.currentDay = {
+        date: new Date(day.year, day.month, day.day),
+        day: day
+      };
+      this.showDayModel = true;
+    },
+    handleNewTodo() {},
+    handleCalendarThemeSelect() {},
     createCalendar(date) {
       this.calendar = [];
       let currentMonth = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -402,6 +453,108 @@ $calendar-head-date-height: 3rem;
       }
     }
   }
+  .model {
+    width: 60%;
+    height: auto;
+    border-radius: 0.4rem;
+    position: fixed;
+    /* margin: 0 auto; */
+    background: #fff;
+    top: 10%;
+    min-height: 70%;
+    max-height: 70%;
+    left: 20%;
+    z-index: 999;
+    overflow: hidden;
+    box-shadow: 0 5px 25px 5px rgba(0, 0, 0, 0.1);
+    &::before {
+      content: "";
+      transition: all 0.3s;
+      position: fixed;
+      height: 100%;
+      width: 100%;
+      top: 0;
+      left: 0;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    .left {
+      width: 40%;
+      height: 100%;
+      position: absolute;
+      background: #4c566a;
+      padding: 1rem;
+      .title {
+        padding: 0.5rem 1rem;
+        font-size: 2.3rem;
+        line-height: 2.5rem;
+        font-weight: bolder;
+        color: #fff;
+        word-wrap: break-word;
+      }
+      .title__sub {
+        font-size: 1.4rem;
+        color: #ddd;
+        padding: 0.5rem 1rem;
+      }
+    }
+    .right {
+      width: 60%;
+      height: 100%;
+      position: absolute;
+      left: 40%;
+      padding: 1rem;
+      overflow-x: hidden;
+      overflow-y: auto;
+      background: #fff;
+      .title {
+        font-size: 1.2rem;
+        padding: 0.5rem 1rem 0rem 1rem;
+        font-weight: bold;
+        color: #3b4252;
+      }
+      .title__sub {
+        font-size: 0.9rem;
+        padding: 0.2rem 1rem 0.5rem 1rem;
+        font-weight: 450;
+        color: #898f9b;
+      }
+      .newTask {
+        width: 90%;
+        margin: 0.5rem auto;
+        height: 2rem;
+        // background: linear-gradient( #fff, #ddd);
+        box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s;
+        border-radius: 0.2em;
+        line-height: 2rem;
+        font-size: 1.1rem;
+        color: #777;
+        font-weight: bolder;
+        text-align: center;
+        cursor: pointer;
+        &:hover {
+          background: #eee;
+        }
+      }
+      .TaskList {
+        .task {
+        }
+      }
+    }
+    .closeButton {
+      top: 1rem;
+      right: 1rem;
+      font-size: 1.5rem;
+      height: 1.5rem;
+      text-align: center;
+      width: 1.5rem;
+      line-height: 1.5rem;
+      color: #4c566a;
+      cursor: pointer;
+      font-weight: bolder;
+      position: absolute;
+    }
+  }
 }
 .themeSelector {
   min-height: 2.5rem;
@@ -425,10 +578,10 @@ $calendar-head-date-height: 3rem;
     i {
       width: 1rem;
       height: 2rem;
-      left: .7rem;
+      left: 0.7rem;
       line-height: 2.5rem;
       font-size: 1.1rem;
-      color: #AAA;
+      color: #aaa;
       position: absolute;
       vertical-align: middle;
       top: 0;
@@ -436,8 +589,93 @@ $calendar-head-date-height: 3rem;
     span {
       position: relative;
       padding-left: 1.5rem;
-      color: #4C566A;
+      color: #4c566a;
     }
+  }
+}
+@media screen and (max-width: 600px) {
+  .Calendar {
+    .model {
+      width: 100%;
+      height: 100%;
+      max-height: 100%;
+      max-width: 100%;
+      border-radius: 0;
+      left: 0;
+      top: 0;
+      overflow: hidden;
+      .left {
+        position: fixed;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        .title {
+        }
+        .title__sub {
+          padding: 0rem 1rem;
+          font-size: 1.3rem;
+        }
+      }
+      .right {
+        position: relative;
+        width: 100%;
+        margin-top: 15vh;
+        border-radius: 1rem 1rem 0 0;
+        height: 85%;
+        left: 0;
+      }
+      .closeButton {
+        color: #fff;
+      }
+    }
+  }
+}
+.modelAnimation-enter-active {
+  animation: modelAnimation-in 0.4s;
+}
+.modelAnimation-leave-active {
+  animation: modelAnimation-out 0.4s;
+}
+@media screen and (max-width: 600px) {
+  .modelAnimation-enter-active {
+    animation: none;
+  }
+  .modelAnimation-leave-active {
+    animation: none;
+  }
+  .model>.right {
+    animation: modelPartAnimation-in 0.4s;
+  }
+}
+@keyframes modelAnimation-in {
+  0% {
+    transform: translateY(100vh);
+  }
+  50% {
+    transform: translateY(-2rem);
+  }
+  100% {
+    transform: translateY(0rem);
+  }
+}
+@keyframes modelAnimation-out {
+  0% {
+    transform: translateY(0rem);
+  }
+  50% {
+    transform: translateY(-2rem);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+@keyframes modelPartAnimation-in {
+  0% {
+    transform: translateY(100vh);
+  }
+  100% {
+    transform: translateY(0rem);
   }
 }
 </style>

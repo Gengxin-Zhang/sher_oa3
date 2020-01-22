@@ -24,16 +24,25 @@
           <a-icon type="ellipsis" />
         </a-popover>
       </div>
-    </div> -->
+    </div>-->
+    <div class="Surprise text-focus-in" style="display:none">
+      <div class="word">
+        <span class="letter" v-for="letter,index in 'HAPPY '" :key="index">{{letter}}</span>
+      </div>
+      <div class="word">
+        <span class="letter" v-for="letter,index in 'BIRTHDAY'" :key="index">{{letter}}</span>
+      </div>
+      <div>祝你生日快乐</div>
+    </div>
     <calendar style="margin: 0 -.5rem; width: calc(100% + 1rem)" />
   </div>
 </template>
 
 <script>
 import { mapState, mapGetters, mapActions, mapMutations } from "vuex";
-import Calendar from '@/components/Calendar'
+import Calendar from "@/components/Calendar";
 export default {
-  components:{
+  components: {
     Calendar
   },
   data() {
@@ -46,12 +55,12 @@ export default {
     status() {
       return this.$store.state.status;
     },
-    user(){
-      return this.$store.state.User
+    user() {
+      return this.$store.state.User;
     }
   },
   mounted() {
-    this.setPageName("个人中心")
+    this.setPageName("个人中心");
     let nowHour = new Date().getHours();
     if (nowHour >= 4 && nowHour < 8) {
       this.welcomeWord = "早上好";
@@ -102,6 +111,28 @@ export default {
       font-size: 1rem;
       font-weight: 400;
       color: #777;
+    }
+  }
+  .Surprise {
+    text-align: center;
+    min-height: 10rem;
+    width: 100%;
+    .word {
+      -webkit-text-stroke: 3px #344b52;
+      color: transparent;
+      display: inline-block;
+      font-weight: bolder;
+      font-size: 4rem;
+      text-shadow: 0.15rem 0.5rem 0 #bf616a;
+      letter-spacing: 0.7rem;
+      margin-right: 1rem;
+      &:nth-last-child(1) {
+        margin-right: 0;
+      }
+      .letter {
+        transform: rotate(15deg);
+        display: inline-block;
+      }
     }
   }
   .signBox {
