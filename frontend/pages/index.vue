@@ -51,6 +51,8 @@ export default {
       warmWord: ""
     };
   },
+  created(){
+  },
   computed: {
     status() {
       return this.$store.state.status;

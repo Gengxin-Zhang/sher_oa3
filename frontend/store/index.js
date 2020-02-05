@@ -4,7 +4,10 @@ export const state = () => ({
       open: true
     },
     theme: 'light'
-
+  },
+  calendarTheme: {
+    background: "#ECEFF4",
+    font: "#434C5E"
   },
   pageName: ""
 })
@@ -19,12 +22,24 @@ export const mutations = {
     state.pageName = pageName;
   },
 
-  resetStatus(state) {
-  },
+  resetStatus(state) {},
 
   setStatus(state, status) {
     state.status = status;
     localStorage.setItem("status", JSON.stringify(status))
+  },
+
+  initCalendarTheme(state) {
+    state.calendarTheme = {
+      background: "#ECEFF4",
+      font: "#434C5E"
+    };
+    localStorage.setItem("calendar", JSON.stringify(state.calendarTheme))
+  },
+
+  setCalendarTheme(state, theme) {
+    state.calendarTheme = theme;
+    localStorage.setItem("calendar", JSON.stringify(theme))
   }
 }
 
@@ -44,6 +59,29 @@ export const actions = {
   }, pagename) {
     commit("setPageName", pagename)
   },
+  changeCalendarTheme({
+    commit
+  }, calendarTheme) {
+    commit("setCalendarTheme", calendarTheme);
+  },
+  loadCalendarTheme({
+    commit
+  }) {
+    let raw_theme = localStorage.getItem("calendar");
+    if (!raw_theme) {
+      commit("initCalendarTheme");
+    }
+    try {
+      let theme = JSON.parse(raw_theme);
+      if (theme && theme.hasOwnProperty("background") && theme.hasOwnProperty("font")) {
+        commit("setCalendarTheme", theme)
+      } else {
+        commit("initCalendarTheme");
+      }
+    } catch {
+      commit("initCalendarTheme");
+    }
+  },
   loadStatus({
     commit
   }) {
@@ -55,7 +93,7 @@ export const actions = {
       else {
         commit("resetStatus")
       }
-    } catch(e) {
+    } catch (e) {
       commit("resetStatus");
     }
   }

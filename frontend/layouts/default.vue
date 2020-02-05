@@ -82,6 +82,8 @@ body {
   padding: 0;
   height: 100%;
   width: 100%;
+  // scroll-behavior: smooth;
+  &::-webkit-scrollbar { width: 0 !important }
 }
 
 *,

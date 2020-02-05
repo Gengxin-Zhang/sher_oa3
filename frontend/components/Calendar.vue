@@ -1,6 +1,9 @@
 <template>
-  <div :class="['Calendar', theme]">
-    <div class="head">
+  <div :class="['Calendar']">
+    <div
+      class="head"
+      :style="`--bg-color:${currentTheme.background}; --font-color:${currentTheme.font}`"
+    >
       <div class="date">
         <div class>
           <div class="controler left" @click="toLastMonth()">
@@ -29,8 +32,11 @@
                     <div
                       class="theme"
                       :style="`background-color:${theme.background}`"
-                      v-for="theme in calendarThemes"
-                      @click="handleCalendarThemeSelect(theme)"
+                      v-for="theme,index in calendarThemes"
+                      :data-background="theme.background"
+                      :data-font="theme.font"
+                      :key="index"
+                      @click="handleCalendarThemeSelect"
                     ></div>
                   </div>
                   <div class="popoverList calendar__popoverList" style="text-align:left">
@@ -68,7 +74,10 @@
         >
           <div class="title" @click="handleDayClick(day)">
             <span
-              :class="['dayNumber', day.year === nowDate.getFullYear() && day.month === nowDate.getMonth() && day.day === nowDate.getDate()?'thisDay':'']"
+              :class="['dayNumber', 
+                        day.year === nowDate.getFullYear() && 
+                        day.month === nowDate.getMonth() && 
+                        day.day === nowDate.getDate()?'thisDay':'']"
             >{{day.day}}</span>
             <span class="todoCount" v-if="day.todo.length==0">{{day.todo.length}}</span>
           </div>
@@ -85,10 +94,11 @@
     </div>
     <transition name="modelAnimation">
       <div class="model" v-if="showDayModel">
+        <div class="mask" @click="showDayModel=false"></div>
         <div class="left">
           <div class="title">
-            <span>{{currentDay.day.year}}</span>,
-            <span>{{currentDay.day.month+1}}</span>,
+            <span>{{currentDay.day.year}},</span>
+            <span>{{currentDay.day.month+1}},</span>
             <span>{{currentDay.day.day}}</span>
           </div>
           <div class="title__sub">星期{{dayNameList[0][currentDay.date.getDay()]}}</div>
@@ -97,11 +107,66 @@
           <div class="right">
             <div class="title">本日任务</div>
             <div class="title__sub">共有{{currentDay.day.todo.length}}项任务等待完成</div>
-            <div class="newTask" @click="handleNewTodo">
+            <div class="newTask" @click="handleNewTodayTodo">
               <a-icon type="plus" />
             </div>
             <div class="taskList">
-              <div class="task">
+              <div class="task" style="--bg-color:#89a1ef;animation-delay: -.5s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#b9e6ff;animation-delay: -.4s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#f5d491;animation-delay: -.3s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#B48EAD;animation-delay: -.2s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#8FBCBB;animation-delay: -.1s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#3B4252;animation-delay: 0s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#3B4252;animation-delay: .1s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#3B4252;animation-delay: .2s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#3B4252;animation-delay: .3s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--bg-color:#3B4252;animation-delay: .4s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--color:#3B4252;animation-delay: .5s;">
+                <div class="name"></div>
+                <div class="content"></div>
+                <div class="info"></div>
+              </div>
+              <div class="task" style="--color:#3B4252;animation-delay: .6s;">
                 <div class="name"></div>
                 <div class="content"></div>
                 <div class="info"></div>
@@ -118,11 +183,11 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   data() {
     return {
       dayNameList: ["日一二三四五六七", "一二三四五六日"],
-      theme: "",
       weekMode: 1,
       // 选中的日期
       currentDay: null,
@@ -139,30 +204,37 @@ export default {
       // 日历主题
       calendarThemes: [
         {
+          name: "grey",
+          background: "#ECEFF4",
+          font: "#2E3440"
+        },
+        {
           name: "black",
           background: "#3B4252",
           font: "#fff"
         },
         {
           name: "purple",
-          background: "#B48EAD",
+          background: "#7776bc",
           font: "#fff"
-        },
-        {
-          name: "grey",
-          background: "#D8DEE9",
-          font: "#2E3440"
         },
         {
           name: "blue",
-          background: "#5E81AC",
+          background: "#5c95ff",
           font: "#fff"
         },
+
         {
-          name: "green",
-          background: "#8FBCBB",
+          name: "orange",
+          background: "#f87575",
           font: "#fff"
         }
+
+        // {
+        //   name: "blue",
+        //   background: "#5E81AC",
+        //   font: "#fff"
+        // },
       ]
       //   TimeUpdateService: null,
     };
@@ -171,11 +243,27 @@ export default {
     this.backToNowTime();
   },
   mounted() {
+    this.loadCalendarTheme();
     this.backToNowTime();
     this.createCalendar(this.currentDate);
   },
+  computed: {
+    currentTheme() {
+      return this.$store.state.calendarTheme;
+    }
+  },
   destroyed() {},
+  watch:{
+    showDayModel(after, before){
+      if (after){
+        document.getElementsByTagName("html")[0].style.overflow ="hidden"
+      }else{
+        document.getElementsByTagName("html")[0].style.overflow ="auto"
+      }
+    }
+  },
   methods: {
+    ...mapActions(["loadCalendarTheme", "changeCalendarTheme"]),
     getWeek(id) {
       return {
         week: id,
@@ -222,7 +310,13 @@ export default {
       this.showDayModel = true;
     },
     handleNewTodo() {},
-    handleCalendarThemeSelect() {},
+    handleNewTodayTodo() {},
+    handleCalendarThemeSelect(e) {
+      this.changeCalendarTheme({
+        background: e.target.dataset.background,
+        font: e.target.dataset.font
+      });
+    },
     createCalendar(date) {
       this.calendar = [];
       let currentMonth = new Date(date.getFullYear(), date.getMonth(), 1);
@@ -274,13 +368,14 @@ $calendar-head-date-height: 3rem;
     width: 100%;
     .date {
       height: $calendar-head-date-height;
-      background: #b48ead;
+      background: var(--bg-color);
       text-align: center;
       box-shadow: 0 1px 5px 2px #4c566a;
       font-size: 1.1rem;
       line-height: $calendar-head-date-height;
-      color: #fff;
+      color: var(--font-color);
       font-weight: bolder;
+      transition: all 0.3s;
       .controler {
         display: inline-block;
         cursor: pointer;
@@ -325,6 +420,7 @@ $calendar-head-date-height: 3rem;
       }
       .name {
         display: inline-block;
+        transition: all 0.3s;
         span {
           cursor: pointer;
           display: inline-block;
@@ -456,7 +552,7 @@ $calendar-head-date-height: 3rem;
   .model {
     width: 60%;
     height: auto;
-    border-radius: 0.4rem;
+    border-radius: 0.8rem;
     position: fixed;
     /* margin: 0 auto; */
     background: #fff;
@@ -467,15 +563,15 @@ $calendar-head-date-height: 3rem;
     z-index: 999;
     overflow: hidden;
     box-shadow: 0 5px 25px 5px rgba(0, 0, 0, 0.1);
-    &::before {
-      content: "";
-      transition: all 0.3s;
+    .mask {
       position: fixed;
       height: 100%;
       width: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(10px);
+      animation: blurAnimation 1.5s;
       top: 0;
       left: 0;
-      background: rgba(0, 0, 0, 0.5);
     }
     .left {
       width: 40%;
@@ -505,12 +601,13 @@ $calendar-head-date-height: 3rem;
       padding: 1rem;
       overflow-x: hidden;
       overflow-y: auto;
-      background: #fff;
+      background: #eceff4;
       .title {
-        font-size: 1.2rem;
+        font-size: 1.4rem;
         padding: 0.5rem 1rem 0rem 1rem;
         font-weight: bold;
-        color: #3b4252;
+        line-height: 2rem;
+        color: rgb(53, 60, 73);
       }
       .title__sub {
         font-size: 0.9rem;
@@ -519,11 +616,10 @@ $calendar-head-date-height: 3rem;
         color: #898f9b;
       }
       .newTask {
-        width: 90%;
-        margin: 0.5rem auto;
+        width: 95%;
+        margin: 0.4rem auto;
         height: 2rem;
         // background: linear-gradient( #fff, #ddd);
-        box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
         transition: all 0.3s;
         border-radius: 0.2em;
         line-height: 2rem;
@@ -532,12 +628,33 @@ $calendar-head-date-height: 3rem;
         font-weight: bolder;
         text-align: center;
         cursor: pointer;
+        background: #d8dee9;
+        box-shadow: 0 0 2px 1px #d8dee922;
         &:hover {
-          background: #eee;
+          background: #fff;
+          box-shadow: 0 0 2px 1px rgba(0, 0, 0, 0.1);
         }
       }
-      .TaskList {
+      scroll-behavior: smooth;
+      .taskList {
+        height: calc(100% - 8.5rem);
+        width: 95%;
+        margin: 0 auto 0.5rem auto;
+        overflow-y: auto;
+        transition: all 0.3s;
+        scroll-behavior: smooth;
+        &::-webkit-scrollbar {
+          width: 0 !important;
+        }
         .task {
+          height: 3rem;
+          border-radius: 0.3rem;
+          background-color: var(--bg-color);
+          // background-color: #fff;
+          border: 1px rgba(0, 0, 0, 0.1) solid;
+          margin-bottom: 0.2rem;
+          transition: all 0.3s;
+          animation: modelPartAnimation-in 0.8s;
         }
       }
     }
@@ -552,7 +669,11 @@ $calendar-head-date-height: 3rem;
       color: #4c566a;
       cursor: pointer;
       font-weight: bolder;
+      transition: all 0.3s;
       position: absolute;
+      &:hover {
+        transform: rotate(180deg);
+      }
     }
   }
 }
@@ -624,6 +745,12 @@ $calendar-head-date-height: 3rem;
         border-radius: 1rem 1rem 0 0;
         height: 85%;
         left: 0;
+        .newTask {
+          width: 100%;
+        }
+        .taskList {
+          width: 100%;
+        }
       }
       .closeButton {
         color: #fff;
@@ -644,7 +771,7 @@ $calendar-head-date-height: 3rem;
   .modelAnimation-leave-active {
     animation: none;
   }
-  .model>.right {
+  .model > .right {
     animation: modelPartAnimation-in 0.4s;
   }
 }
@@ -676,6 +803,16 @@ $calendar-head-date-height: 3rem;
   }
   100% {
     transform: translateY(0rem);
+  }
+}
+@keyframes blurAnimation {
+  0% {
+    backdrop-filter: blur(0px);
+    background: rgba(255, 255, 255, 0.1);
+  }
+  100% {
+    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.4);
   }
 }
 </style>
