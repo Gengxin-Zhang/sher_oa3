@@ -1,44 +1,251 @@
 import datetime
 import hashlib
+from app.models.UserBase import UserBase
+from app.models.Role import Role
 
 from app import db
 
 
 def str2md5(str):
-    return hashlib.md5(hashlib.md5(str.encode('utf-8')).hexdigest().encode('utf-8')).hexdigest()
+    return hashlib.sha256(hashlib.sha256(str.encode('utf-8')).hexdigest().encode('utf-8')).hexdigest()
 
+class Sign(db.Document):
+    pass
 
-class User(db.Document):
-    name = db.StringField()
-    permission = db.IntField(default=0)
+class User(UserBase):
     user_id = db.StringField()
     bio = db.StringField()
-    last_modify = db.DateTimeField()
-    create_datetime = db.DateTimeField()
     password = db.StringField()
+    nickname = db.StringField()
     status = db.StringField(default='p')
+    roles = db.ListField(db.ReferenceField(Role,reverse_delete_rule=4),default=[])
+    """
+    reverse_delete_rule ==> 引用对象被删除时：
+    0：啥也不干
+    1：将所有对此的引用空化(整个List都会被爆破)
+    2：删除引用此的文档（是整个删除不是只删引用
+    3：如果有别的东西引用这个，阻止删除操作
+    4：只对ListField套ReferenceField有用，两层List不行，表现与0相同；没有List套会报错；删除引用对象后如同.remove这个元素
+    """
+    last_sign = db.ReferenceField(Sign,reverse_delete_rule=1)
 
     def set_password(self, password):
         self.password = str2md5(password)
+        self.last_modify = datetime.datetime.now()
+        return self.save()
+
+    def set_bio(self, bio):
+        self.bio = str2md5(bio)
+        self.last_modify = datetime.datetime.now()
+        return self.save()
+    
+    def set_status(self, status):
+        self.status = str2md5(status)
+        self.last_modify = datetime.datetime.now()
         return self.save()
 
     def valid_password(self, password):
         return self.password == str2md5(password)
 
-    def insert_user(name, user_id, password, permission):
+    def change_role(self,roles):
+        for p,i in enumerate(roles):
+            if not isinstance(i,Role):
+                roles[p] = Role.get_by_id(i)
+        self.roles = roles
+        return self.save()
+
+    def max_permission(self) -> int:
+        mx = 0
+        for i in self.roles:
+            mx = max(mx,i.permission)
+        return mx
+
+    def restrict_permission(self,permission:int) -> bool:
+        """
+        用来判断当前用户是否越权操作角色
+        目前是 O(当前用户角色数) 的
+        """
+        mx = 0
+        for i in self.roles:
+            mx = max(mx,i.permission)
+        return mx > permission
+
+    def restrict_functions(self,functions:list) -> bool:
+        """
+        用来判断当前用户是否越权操作角色
+        目前是 O(当前用户角色数*功能数 + 目标角色功能数) 的？
+        """
+        self_functions = set()
+        for i in self.roles:
+            self_functions|=set(i.allow_functions)
+        return self_functions >= set(functions) or '*' in self_functions
+
+    def insert_user(name, user_id, password):
         return User(name=name, user_id=user_id, 
-                    password=str2md5(password), permission=permission, 
+                    password=str2md5(password),
                     create_datetime=datetime.datetime.now(), last_modify=datetime.datetime.now()).save()
-    
+
+    def get_or_create(name, user_id, password): # 表格导入的时候防重
+        _t = User.objects(name=name,user_id=user_id,password=str2md5(password))
+        if any(_t):
+            return _t.first()
+        else:
+            return User(
+                name=name,
+                user_id=user_id, 
+                password=str2md5(password),
+                create_datetime=datetime.datetime.now(),
+                last_modify=datetime.datetime.now()
+            ).save()
+
     def get_base_info(self):
         return {
             "id": str(self.id),
             "name": self.name,
             "user_id": self.user_id,
             "bio": self.bio,
-            "permission": self.permission
+            "status": self.status,
+            "roles": self.roles,
+            "last_modify": self.last_modify,
+            "create_datetime": self.create_datetime
         }
 
+class Sign(db.Document):
 
-if User.objects().count() == 0:
-    User.insert_user("Admin", "1234567890", "123456", 5)
+    create_datetime = db.DateTimeField()  # 签到时间
+    typ = db.StringField()  # 签到类型，分为'n'正常签到和's'换班签到
+    week = db.IntField()  # 签到周
+    user = db.ReferenceField(User,reverse_delete_rule=2)
+
+    def create(user: User, typ: str, week: int) -> bool:
+        print(user)
+        if user.last_sign:
+            if int(user.last_sign.create_datetime.timestamp() / 7200) != int(datetime.datetime.now().timestamp() / 7200):  # 卡两个小时内多次签到的情况
+                s = Sign(user=user.id,create_datetime=datetime.datetime.now(),
+                         typ=typ, week=week)
+                user.last_sign = s
+                s.save()
+                user.save()
+                return True
+            else:
+                return False
+        else:
+            s = Sign(user=user.id,create_datetime=datetime.datetime.now(),
+                     typ=typ, week=week)
+            user.last_sign = s
+            s.save()
+            user.save()
+            return True
+
+    def get_by_id(id):
+        return Sign(id=id).first()
+
+    def get_by_user(user:User) -> dict:
+        return {"signs":[i.get_base_info() for i in Sign.objects(user=user)]}
+
+    def get_base_info(self) -> dict:
+        return {
+            "id": str(self.id), 
+            "create_datetime": self.create_datetime,
+            "week": self.week,
+            "typ": self.typ,
+            "user": self.user
+        }
+
+class User(UserBase):
+    user_id = db.StringField()
+    bio = db.StringField()
+    password = db.StringField()
+    nickname = db.StringField()
+    status = db.StringField(default='p')
+    roles = db.ListField(db.ReferenceField(Role,reverse_delete_rule=4),default=[])
+    """
+    reverse_delete_rule ==> 引用对象被删除时：
+    0：啥也不干
+    1：将所有对此的引用空化(整个List都会被爆破)
+    2：删除引用此的文档（是整个删除不是只删引用
+    3：如果有别的东西引用这个，阻止删除操作
+    4：只对ListField套ReferenceField有用，两层List不行，表现与0相同；没有List套会报错；删除引用对象后如同.remove这个元素
+    """
+    last_sign = db.ReferenceField(Sign,reverse_delete_rule=1)
+
+    def set_password(self, password):
+        self.password = str2md5(password)
+        self.last_modify = datetime.datetime.now()
+        return self.save()
+
+    def set_bio(self, bio):
+        self.bio = str2md5(bio)
+        self.last_modify = datetime.datetime.now()
+        return self.save()
+    
+    def set_status(self, status):
+        self.status = str2md5(status)
+        self.last_modify = datetime.datetime.now()
+        return self.save()
+
+    def valid_password(self, password):
+        return self.password == str2md5(password)
+
+    def change_role(self,roles):
+        for p,i in enumerate(roles):
+            if not isinstance(i,Role):
+                roles[p] = Role.get_by_id(i)
+        self.roles = roles
+        return self.save()
+
+    def max_permission(self) -> int:
+        mx = 0
+        for i in self.roles:
+            mx = max(mx,i.permission)
+        return mx
+
+    def restrict_permission(self,permission:int) -> bool:
+        """
+        用来判断当前用户是否越权操作角色
+        目前是 O(当前用户角色数) 的
+        """
+        mx = 0
+        for i in self.roles:
+            mx = max(mx,i.permission)
+        return mx > permission
+
+    def restrict_functions(self,functions:list) -> bool:
+        """
+        用来判断当前用户是否越权操作角色
+        目前是 O(当前用户角色数*功能数 + 目标角色功能数) 的？
+        """
+        self_functions = set()
+        for i in self.roles:
+            self_functions|=set(i.allow_functions)
+        return self_functions >= set(functions) or '*' in self_functions
+
+    def insert_user(name, user_id, password):
+        return User(name=name, user_id=user_id, 
+                    password=str2md5(password),
+                    create_datetime=datetime.datetime.now(), last_modify=datetime.datetime.now()).save()
+
+    def get_or_create(name, user_id, password): # 表格导入的时候防重
+        _t = User.objects(name=name,user_id=user_id,password=str2md5(password))
+        if any(_t):
+            return _t.first()
+        else:
+            return User(
+                name=name,
+                user_id=user_id, 
+                password=str2md5(password),
+                create_datetime=datetime.datetime.now(),
+                last_modify=datetime.datetime.now()
+            ).save()
+
+    def get_base_info(self):
+        return {
+            "id": str(self.id),
+            "name": self.name,
+            "user_id": self.user_id,
+            "bio": self.bio,
+            "status": self.status,
+            "roles": self.roles,
+            "last_modify": self.last_modify,
+            "create_datetime": self.create_datetime
+        }
