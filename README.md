@@ -65,6 +65,15 @@ git clone https://github.com/Gengxin-Zhang/sher_oa3.git
 cd sher_oa3
 sudo docker-compose up
 
+#安装Node.js
+sudo apt install -y nodejs npm
+cd frontend
+sudo npm install -g n
+n 10.15.3
+apt remove --purge nodejs
+apt install -y nodejs
+npm -g install npm@6.13.0
+
 #配置Nginx
 mkdir /var/log
 sudo cp ./oaapi.54sher.cn.com.conf /etc/nginx/conf.d/
