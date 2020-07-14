@@ -4,3 +4,5 @@ flask-mongoengine==0.9.5
 flask_script
 uwsgi
 pyjwt
+xlrd
+diff-match-patch
