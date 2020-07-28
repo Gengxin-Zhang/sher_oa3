@@ -13,8 +13,8 @@ class Role(db.Document):
     name = db.StringField()
     allow_functions = db.ListField(db.StringField(),default=[])
 
-    def new_role(name,permission):
-        return Role(name=name,permission=permission).save()
+    def new_role(name,permission,allow_functions=[]):
+        return Role(name=name,permission=permission,allow_functions=allow_functions).save()
 
     def get_by_id(id):
         return Role.objects(id=id).first()
