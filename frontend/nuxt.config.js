@@ -1,11 +1,23 @@
-module.exports = {
+
+export default {
+  /*
+  ** Nuxt rendering mode
+  ** See https://nuxtjs.org/api/configuration-mode
+  */
   mode: 'universal',
   /*
-   ** Headers of the page
-   */
+  ** Nuxt target
+  ** See https://nuxtjs.org/api/configuration-target
+  */
+  target: 'server',
+  /*
+  ** Headers of the page
+  ** See https://nuxtjs.org/api/configuration-head
+  */
   head: {
-    title: '升华OA',
-    meta: [{
+    title: process.env.npm_package_name || '',
+    meta: [
+      {
         charset: 'utf-8'
       },
       {
@@ -18,65 +30,55 @@ module.exports = {
         content: process.env.npm_package_description || ''
       }
     ],
-    link: [{
-      rel: 'icon',
-      type: 'image/x-icon',
-      href: '/favicon.ico'
-    }, ]
+    link: [
+      {
+        rel: 'icon',
+        type: 'image/x-icon',
+        href: '/favicon.ico'
+      }
+    ]
   },
   /*
-   ** Customize the progress-bar color
-   */
-  loading: {
-    color: '#fff'
-  },
-  /*
-   ** Global CSS
-   */
+  ** Global CSS
+  */
   css: [
-    'ant-design-vue/dist/antd.css',
-    '@/assets/base.css'
+    'ant-design-vue/dist/antd.css'
   ],
   /*
-   ** Plugins to load before mounting the App
-   */
+  ** Plugins to load before mounting the App
+  ** https://nuxtjs.org/guide/plugins
+  */
   plugins: [
-    '@/plugins/config',
-    '@/plugins/antd-ui',
-    '@/plugins/axios',
-    '@/plugins/api',
-    {
-      src: "@/plugins/vue-particles.js",
-      ssr: false
-    }
+    '@/plugins/antd-ui'
   ],
   /*
-   ** Nuxt.js dev-modules
-   */
-  buildModules: [],
+  ** Auto import components
+  ** See https://nuxtjs.org/api/configuration-components
+  */
+  components: true,
   /*
-   ** Nuxt.js modules
-   */
+  ** Nuxt.js dev-modules
+  */
+  buildModules: [
+    // Doc: https://github.com/nuxt-community/eslint-module
+    '@nuxtjs/eslint-module'
+  ],
+  /*
+  ** Nuxt.js modules
+  */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios',
-    // Doc: https://github.com/nuxt-community/dotenv-module
-    '@nuxtjs/dotenv',
+    '@nuxtjs/axios'
   ],
   /*
-   ** Axios module configuration
-   ** See https://axios.nuxtjs.org/options
-   */
-  axios: {
-    baseURL: "http://localhost:5000/api/v1"//"http://192.168.31.108:5000/api/v1"
-  },
+  ** Axios module configuration
+  ** See https://axios.nuxtjs.org/options
+  */
+  axios: {},
   /*
-   ** Build configuration
-   */
+  ** Build configuration
+  ** See https://nuxtjs.org/api/configuration-build/
+  */
   build: {
-    /*
-     ** You can extend webpack config here
-     */
-    extend(config, ctx) {}
   }
 }

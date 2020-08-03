@@ -1,6 +1,27 @@
-# PAGES
+### Pages
 
-This directory contains your Application Views and Routes.
-The framework reads all the `*.vue` files inside this directory and creates the router of your application.
-
-More information about the usage of this directory in [the documentation](https://nuxtjs.org/guide/routing).
+- admin 超管
+  - auth
+    - login 登录
+  - domainManage 用户域管理
+  - dutyManage 值班管理
+  - roleManage 角色管理
+  - signManage 签到管理
+  - userManage 用户管理
+- auth 认证
+  - login 登录
+- staff 员工
+- supervisor 管理人员（部长、总监）
+  - groupManage 小组管理
+  - staffManage 部门员工管理
+- user 用户
+  - center 用户中心
+  - profile 资料
+- utility 工具应用
+  - questionnaire 问卷
+    - index 主页
+  - sherOffice 协同办公
+    - index 主页
+- duty 值班
+- group 小组
+- index （暂无用处）
