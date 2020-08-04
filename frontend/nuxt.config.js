@@ -49,7 +49,8 @@ export default {
   ** https://nuxtjs.org/guide/plugins
   */
   plugins: [
-    '@/plugins/antd-ui'
+    '@/plugins/antd-ui',
+    '@/plugins/api'
   ],
   /*
   ** Auto import components
@@ -68,13 +69,16 @@ export default {
   */
   modules: [
     // Doc: https://axios.nuxtjs.org/usage
-    '@nuxtjs/axios'
+    '@nuxtjs/axios',
+    '@nuxtjs/dotenv'
   ],
   /*
   ** Axios module configuration
   ** See https://axios.nuxtjs.org/options
   */
-  axios: {},
+  axios: {
+    baseURL: 'http://kyaru.dy1c.top:5000/api/v1/'
+  },
   /*
   ** Build configuration
   ** See https://nuxtjs.org/api/configuration-build/
