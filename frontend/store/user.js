@@ -3,20 +3,32 @@ export const state = () => ({
     id: '',
     nickname: '',
     name: '',
-    user_id: '',
-    permission: -1
+    userID: '',
+    permission: -1,
+    roles: []
   },
-  signed: false,
-  token: ''
+  logined: false,
+  token: '',
+  onDuty: false
 })
 
 export const mutations = {
   setUserInfo(state, newUserInfo) {
-    state.userInfo = newUserInfo
-    state.signed = true
+    const { id, name, roles } = newUserInfo
+    state.userInfo = { id, name, roles }
+    state.userInfo.userID = newUserInfo.user_id
+    state.logined = true
   },
   setToken(state, newToken) {
     state.token = newToken
+    localStorage.setItem('token', newToken)
+  },
+  setLogined(state, newLogined) {
+    state.logined = newLogined
+    localStorage.setItem('logined', newLogined)
+  },
+  setOnDuty(state, newOnDuty) {
+    state.onDuty = newOnDuty
   },
   setNickname(state, newNickname) {
     state.nickname = newNickname
@@ -26,29 +38,41 @@ export const mutations = {
 export const actions = {
   login({ commit }, credentials) {
     if (credentials.username === '') {
-      console.log('无学号')
       return Promise.reject(new Error('请填写学号'))
     }
     else if (credentials.password === '') {
-      console.log('无密码')
       return Promise.reject(new Error('请输入密码'))
     }
     return this.$api.auth.login(credentials)
       .then((res) => {
         if (!res.data.status) {
-          console.log('login fail')
-          return Promise.reject(new Error(res.data.msg))
+          return Promise.reject(new Error('actions status error'))
         }
         else {
-          console.log('login succeed')
-          commit('setUserInfo', res.data.user)
-          commit('setToken', res.data.token)
-          localStorage.setItem('token', res.data.token)
+          commit('setUserInfo', res.data.data.user)
+          commit('setToken', res.data.data.token)
+          commit('setLogined', true)
           return Promise.resolve()
         }
       })
       .catch((err) => {
-        return Promise.reject(new Error(err))
+        return Promise.reject(new Error(`${err}`))
+      })
+  },
+  logout({ commit }) {
+    localStorage.removeItem('token')
+    localStorage.setItem('logined', false)
+    this.$router.push('/auth/login')
+  },
+  signin({ commit }) {
+    return this.$api.basic.signin()
+      .then((res) => {
+        commit('setOnDuty', true)
+        console.log('signin', res)
+        return Promise.resolve()
+      })
+      .catch((err) => {
+        return Promise.reject(new Error(`${err}`))
       })
   }
 }
