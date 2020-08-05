@@ -62,3 +62,9 @@ def signin():
 def rename_self():
     g.user.rename(g.data['name'])
     return trueReturn()
+
+@handle_error
+@auth_blueprint.route('/verify', methods=['GET'])
+@validsign
+def verify_self():
+    return trueReturn(g.user.get_base_info())
