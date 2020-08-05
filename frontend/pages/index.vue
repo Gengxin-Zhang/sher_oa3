@@ -1,42 +1,61 @@
 <template>
-  <div class="container">
-    <div>
-      <h1 class="title">
-        升华OA
-      </h1>
-    </div>
+  <div>
+    <!-- dev test!! -->
+
+    升华OA
+    <button
+      :disabled="onDuty"
+      @click="signBtnHdl"
+    >签到</button>
+    <button
+      @click="logoutBtnHdl"
+    >登出</button>
+
+    <!-- dev test!! -->
   </div>
 </template>
 
 <script>
-export default {}
+  import { mapActions, mapState } from 'vuex'
+
+  export default {
+    name: 'SherOA',
+    data() {
+      return {
+
+      }
+    },
+    computed: {
+      ...mapState({
+        onDuty: 'user/onDuty'
+      })
+    },
+    methods: {
+      ...mapActions({
+        signin: 'user/signin',
+        logout: 'user/login'
+      }),
+
+      signBtnHdl() {
+        if (this.onDuty) {
+          return
+        }
+
+        this.signin()
+          .then((res) => {
+            this.$message.success('签到成功')
+          })
+          .catch((err) => {
+            this.$message.error(`${err}`)
+          })
+      },
+      logoutBtnHdl() {
+        this.logout()
+      }
+    }
+  }
 </script>
 
-<style>
-.container {
-  margin: 0 auto;
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-}
+<style lang="scss" scoped>
 
-.title {
-  font-family:
-    'Quicksand',
-    'Source Sans Pro',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    'Helvetica Neue',
-    Arial,
-    sans-serif;
-  display: block;
-  font-weight: 300;
-  font-size: 100px;
-  color: #35495e;
-  letter-spacing: 1px;
-}
 </style>
