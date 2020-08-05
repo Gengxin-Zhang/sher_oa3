@@ -1,4 +1,3 @@
-
 export default {
   /*
   ** Nuxt rendering mode
@@ -15,7 +14,7 @@ export default {
   ** See https://nuxtjs.org/api/configuration-head
   */
   head: {
-    title: process.env.npm_package_name || '',
+    title: '升华OA',
     meta: [
       {
         charset: 'utf-8'
@@ -84,5 +83,9 @@ export default {
   ** See https://nuxtjs.org/api/configuration-build/
   */
   build: {
+
+  },
+  router: {
+
   }
 }
