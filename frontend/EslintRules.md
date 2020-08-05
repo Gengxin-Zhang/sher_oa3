@@ -11,4 +11,4 @@
 9. 文件尾必须另起一行
 10. if else while等后必须加大括号 无论几行
 11. Promise.reject()的参数必须为Error对象，即若要返回信息"test"，应该用 Promise.reject(new Error('test'))
-12. 箭头函数如果是单参数 那么不加括号
+12. 用const代替let
