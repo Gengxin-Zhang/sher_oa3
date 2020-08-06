@@ -27,6 +27,10 @@ export default {
         hid: 'description',
         name: 'description',
         content: process.env.npm_package_description || ''
+      },
+      {
+        'http-equiv': 'Access-Control-Allow-Origin',
+        content: '*'
       }
     ],
     link: [
@@ -49,7 +53,8 @@ export default {
   */
   plugins: [
     '@/plugins/antd-ui',
-    '@/plugins/api'
+    '@/plugins/api',
+    '@/plugins/axios'
   ],
   /*
   ** Auto import components
@@ -76,7 +81,7 @@ export default {
   ** See https://axios.nuxtjs.org/options
   */
   axios: {
-    baseURL: 'http://kyaru.dy1c.top:5000/api/v1/'
+    baseURL: 'http://kyaru.dy1c.top:5000/api/v1'
   },
   /*
   ** Build configuration
