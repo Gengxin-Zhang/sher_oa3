@@ -18,6 +18,7 @@ export const mutations = {
     state.userInfo = { id, name, roles }
     state.userInfo.userID = newUserInfo.user_id
     state.logined = true
+    localStorage.setItem('userInfo', JSON.stringify(newUserInfo))
   },
   setToken(state, newToken) {
     state.token = newToken
@@ -46,7 +47,7 @@ export const actions = {
     return this.$api.auth.login(credentials)
       .then((res) => {
         if (!res.data.status) {
-          return Promise.reject(new Error('actions status error'))
+          return Promise.reject(new Error(res.data.msg))
         }
         else {
           commit('setUserInfo', res.data.data.user)
@@ -56,23 +57,104 @@ export const actions = {
         }
       })
       .catch((err) => {
-        return Promise.reject(new Error(`${err}`))
+        return Promise.reject(new Error(`${err}`.replace(/Error: /g, '')))
       })
   },
   logout({ commit }) {
+    commit('setUserInfo', {
+      id: '',
+      nickname: '',
+      name: '',
+      userID: '',
+      permission: -1,
+      roles: []
+    })
+    commit('setToken', '')
+    commit('setLogined', false)
     localStorage.removeItem('token')
     localStorage.setItem('logined', false)
+    localStorage.removeItem('userInfo')
     this.$router.push('/auth/login')
   },
   signin({ commit }) {
     return this.$api.basic.signin()
       .then((res) => {
-        commit('setOnDuty', true)
         console.log('signin', res)
+        if (res.data.status) {
+          commit('setOnDuty', true)
+          return Promise.resolve()
+        }
+        else {
+          return Promise.reject(new Error(res.data.msg))
+        }
+      })
+      .catch((err) => {
+        return Promise.reject(new Error(`${err}`.replace(/Error: /g, '')))
+      })
+  },
+  mySigns({ commit }) {
+    return this.$api.basic.myRoutine()
+      .then((res) => {
+        console.log('mySigns', res)
         return Promise.resolve()
       })
       .catch((err) => {
         return Promise.reject(new Error(`${err}`))
+      })
+  },
+  exportSigns({ commit }) {
+    return this.$api.basic.exportSigns()
+      .then((res) => {
+        console.log('exportSigns', res)
+        if (res.data.status) {
+          return Promise.resolve()
+        }
+        else {
+          return Promise.reject(new Error(res.data.msg))
+        }
+      })
+      .catch((err) => {
+        return Promise.reject(new Error(`${err}`.replace(/Error: /g, '')))
+      })
+  },
+  initRoutine({ commit }, initSignTime) {
+    return this.$api.basic.initRoutine({ signtime: initSignTime })
+      .then((res) => {
+        console.log('initRoutine', res)
+        if (res.data.status) {
+          return Promise.resolve()
+        }
+        else {
+          return Promise.reject(new Error(res.data.msg))
+        }
+      })
+      .catch((err) => {
+        return Promise.reject(new Error(`${err}`.replace(/Error: /g, '')))
+      })
+  },
+  allRoutine({ commit }) {
+    return this.$api.basic.allRoutine()
+      .then((res) => {
+        console.log('allRoutine', res)
+        if (res.data.status) {
+          return Promise.resolve()
+        }
+        else {
+          return Promise.reject(new Error(res.data.msg))
+        }
+      })
+      .catch((err) => {
+        return Promise.reject(new Error(`${err}`.replace(/Error: /g, '')))
+      })
+  },
+  myRoutine({ commit }) {
+    return this.$api.basic.myRoutine()
+      .then((res) => {
+        console.log('myRoutine', res)
+        return Promise.resolve()
+      })
+      .catch((err) => {
+        return Promise.reject(new Error(`${err}`.replace(/Error: /g, '')))
       })
   }
 }
