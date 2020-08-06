@@ -2,7 +2,7 @@ export default $axios => ({
   login(credentials) {
     return $axios.post('/auth/signin', credentials)
   },
-  validateToken(token) {
+  validateToken() {
     return $axios.get('/auth/verify')
   }
 })
